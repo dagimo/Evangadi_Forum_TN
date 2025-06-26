@@ -76,11 +76,11 @@ async function addColumnIfNotExists(table, column, definition) {
 // In your migration logic, replace direct ALTER TABLE with:
 (async () => {
   try {
-    await dbConnection.query('CREATE TABLE IF NOT EXISTS users (userid INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255), email VARCHAR(255), password VARCHAR(255), profile_pic LONGTEXT)');
+    await dbConnection.query('CREATE TABLE IF NOT EXISTS users (userid INT SERIAL PRIMARY KEY, username VARCHAR(255), email VARCHAR(255), password VARCHAR(255), profile_pic LONGTEXT)');
     await addColumnIfNotExists('users', 'profile_pic', 'LONGTEXT');
-    await dbConnection.query('CREATE TABLE IF NOT EXISTS questions (questionid INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), description TEXT, createdate DATETIME, userid INT, views INT DEFAULT 0)');
+    await dbConnection.query('CREATE TABLE IF NOT EXISTS questions (questionid INT SERIAL PRIMARY KEY, title VARCHAR(255), description TEXT, createdate DATETIME, userid INT, views INT DEFAULT 0)');
     await addColumnIfNotExists('questions', 'views', 'INT DEFAULT 0');
-    await dbConnection.query('CREATE TABLE IF NOT EXISTS answers (answerid INT AUTO_INCREMENT PRIMARY KEY, answer TEXT, createdate DATETIME, userid INT, questionid INT, views INT DEFAULT 0)');
+    await dbConnection.query('CREATE TABLE IF NOT EXISTS answers (answerid INT SERIAL PRIMARY KEY, answer TEXT, createdate DATETIME, userid INT, questionid INT, views INT DEFAULT 0)');
     await addColumnIfNotExists('answers', 'views', 'INT DEFAULT 0');
     // ... other migrations ...
     await addColumnIfNotExists('users', 'password_reset_token', 'VARCHAR(255) NULL');
