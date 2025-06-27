@@ -47,14 +47,17 @@ async function start() {
     //added tables
     await dbConnection.query(createAnswerVotes);
     await dbConnection.query(createAnswerComments);
+    console.log("✅ Connected to PostgreSQL database");
+    console.log("✅ Migrations completed successfully.");
   } catch (error) {
-    console.log("Starting server without database connection for testing...");
+    console.log("❌ Error during DB setup:", error.message);
   }
   
   // Start server regardless of database connection
   app.listen(PORT, () => {
+    console.log(`🚀 Server is running on port ${PORT}`);
     if (!dbConnected) {
-      console.log("Note: Database is not connected. Some features may not work.");
+      console.warn("⚠️ Note: Database is not connected. Some features may not work.");
     }
   });
 }
