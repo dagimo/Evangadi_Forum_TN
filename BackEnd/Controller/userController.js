@@ -58,6 +58,7 @@ async function login(req, res) {
       .status(StatusCodes.OK) // 200 OK: Login successful
       .json({ msg: "user login successful", token, username }); // Send token and username to frontend
   } catch (error) {
+    console.error("Login Error Details:", error)
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR) // 500 Internal Server Error: Unexpected server issue
       .json({ msg: "something went wrong, try again later!" });

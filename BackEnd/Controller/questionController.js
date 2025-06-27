@@ -95,7 +95,15 @@ FROM questions q
 LEFT JOIN users u ON q.userid = u.userid
 LEFT JOIN answers a ON q.questionid = a.questionid
 LEFT JOIN answer_votes av ON a.answerid = av.answerid
-GROUP BY q.questionid
+GROUP BY 
+  q.questionid,
+  q.title,
+  q.description,
+  q.createdate,
+  q.userid,
+  u.username,    
+  u.profile_pic, 
+  q.views
 ORDER BY q.createdate DESC;
 
 
