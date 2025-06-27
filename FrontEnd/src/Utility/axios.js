@@ -1,5 +1,14 @@
 import axios from "axios";
 
+const API_BASE_URL_FROM_ENV = import.meta.env.VITE_BASE_URL;
+
+// FOR DEBUGGING ONLY - REMOVE AFTER FIXING
+console.log("--- Frontend Axios Config ---");
+console.log("VITE_BASE_URL (from Netlify env):", API_BASE_URL_FROM_ENV);
+console.log("Current window location:", window.location.href);
+console.log("--- End Axios Config ---");
+// END DEBUGGING
+
 export const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
   headers: {
