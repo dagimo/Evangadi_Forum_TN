@@ -8,7 +8,7 @@ const getAnswersByQuestionId = async (req, res) => {
   try {
     // Increment views for answers of this question (optional)
     await dbConnection.query(
-      `UPDATE questions SET views = views + 1 WHERE questionid = ?`,
+      `UPDATE questions SET views = views + 1 WHERE questionid = $1`,
       [questionid]
     );
 
@@ -28,7 +28,7 @@ const getAnswersByQuestionId = async (req, res) => {
        FROM answers a
        LEFT JOIN users u ON a.userid = u.userid
        LEFT JOIN answer_votes av ON a.answerid = av.answerid
-       WHERE a.questionid = ?
+       WHERE a.questionid = $1
        GROUP BY a.answerid
        ORDER BY createdate DESC`,
       [questionid]
@@ -53,27 +53,27 @@ async function upvoteDownvote(req, res) {
   try {
     // Check if user has already voted
     const [existingVotes] = await dbConnection.query(
-      `SELECT * FROM answer_votes WHERE answerid = ? AND userid = ?`,
+      `SELECT * FROM answer_votes WHERE answerid = $1 AND userid = $2`,
       [answerid, userid]
     );
 
     if (existingVotes.length > 0) {
       // Update vote
       await dbConnection.query(
-        `UPDATE answer_votes SET vote = ?, created_at = CURRENT_TIMESTAMP WHERE answerid = ? AND userid = ?`,
+        `UPDATE answer_votes SET vote = $1, created_at = CURRENT_TIMESTAMP WHERE answerid = $2 AND userid = $3`,
         [vote, answerid, userid]
       );
     } else {
       // Insert new vote
       await dbConnection.query(
-        `INSERT INTO answer_votes (answerid, userid, vote) VALUES (?, ?, ?)`,
+        `INSERT INTO answer_votes (answerid, userid, vote) VALUES ($1, $2, $3)`,
         [answerid, userid, vote]
       );
     }
 
     // Optionally return total vote count
     const [[{ totalVotes }]] = await dbConnection.query(
-      `SELECT COALESCE(SUM(vote), 0) as totalVotes FROM answer_votes WHERE answerid = ?`,
+      `SELECT COALESCE(SUM(vote), 0) as totalVotes FROM answer_votes WHERE answerid = $1`,
       [answerid]
     );
 
@@ -88,7 +88,7 @@ async function deleteAnswer(req, res) {
   const { userid } = req.user;
 
   const [result] = await dbConnection.query(
-    "DELETE FROM answers WHERE answerid = ? AND userid = ?",
+    "DELETE FROM answers WHERE answerid = $1 AND userid = $2",
     [answerid, userid]
   );
 
@@ -114,7 +114,7 @@ async function postAnswer(req, res) {
   try {
     //3.database insertion
     await dbConnection.query(
-      "INSERT INTO answers(userid, questionid, answer) VALUES (?,?,?)",
+      "INSERT INTO answers(userid, questionid, answer) VALUES ($1,$2,$3)",
       [userid, questionid, answer]
     );
     //4. send success response
@@ -142,7 +142,7 @@ async function updateAnswer(req, res) {
 
   try {
     const [existing] = await dbConnection.query(
-      `SELECT * FROM answers WHERE answerid = ? AND userid = ?`,
+      `SELECT * FROM answers WHERE answerid = $1 AND userid = $2`,
       [answerid, userid]
     );
 
@@ -151,7 +151,7 @@ async function updateAnswer(req, res) {
     }
 
     await dbConnection.query(
-      `UPDATE answers SET answer = ?, edited = true, updated_at = CURRENT_TIMESTAMP WHERE answerid = ?`,
+      `UPDATE answers SET answer = $1, edited = true, updated_at = CURRENT_TIMESTAMP WHERE answerid = $2`,
       [answer, answerid]
     );
 

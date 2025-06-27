@@ -21,7 +21,7 @@ async function login(req, res) {
   try {
     // Query database to find user by email
     const [user] = await dbConnection.query(
-      "SELECT username, userid, password FROM users WHERE email = ?",
+      "SELECT username, userid, password FROM users WHERE email = $1",
       [email]
     );
 
@@ -80,7 +80,7 @@ async function register(req, res) {
   try {
     // Check if user already exists with provided username or email
     const [user] = await dbConnection.query(
-      "SELECT username, userid FROM users WHERE username = ? OR email = ?",
+      "SELECT username, userid FROM users WHERE username = $1 OR email = $2",
       [username, email]
     );
 
@@ -104,7 +104,7 @@ async function register(req, res) {
 
     // Insert new user into the database
     await dbConnection.query(
-      "INSERT INTO users (username, firstname, lastname, email, password) VALUES (?, ?, ?, ?, ?)",
+      "INSERT INTO users (username, firstname, lastname, email, password) VALUES ($1, $2, $3, $4, $5)",
       [username, firstname, lastname, email, hashedPassword] // Values to insert
     );
 
@@ -126,7 +126,7 @@ async function checkUser(req, res) {
   try {
     // Get user data including profile picture
     const [user] = await dbConnection.query(
-      "SELECT username, userid, profile_pic FROM users WHERE userid = ?",
+      "SELECT username, userid, profile_pic FROM users WHERE userid = $1",
       [userid]
     );
     
@@ -151,7 +151,7 @@ async function getProfile(req, res) {
   
   try {
     const [user] = await dbConnection.query(
-      "SELECT username, firstname, lastname, email, profile_pic FROM users WHERE userid = ?",
+      "SELECT username, firstname, lastname, email, profile_pic FROM users WHERE userid = $1",
       [userid]
     );
     
@@ -173,7 +173,7 @@ async function updateProfile(req, res) {
   try {
     // Check if email is already taken by another user
     const [existingUser] = await dbConnection.query(
-      "SELECT userid FROM users WHERE email = ? AND userid != ?",
+      "SELECT userid FROM users WHERE email = $1 AND userid != $2",
       [email, userid]
     );
     
@@ -182,7 +182,7 @@ async function updateProfile(req, res) {
     }
     
     await dbConnection.query(
-      "UPDATE users SET firstname = ?, lastname = ?, email = ? WHERE userid = ?",
+      "UPDATE users SET firstname = $1, lastname = $2, email = $3 WHERE userid = $4",
       [firstname, lastname, email, userid]
     );
     
@@ -215,7 +215,7 @@ async function uploadProfilePic(req, res) {
     }
 
     await dbConnection.query(
-      "UPDATE users SET profile_pic = ? WHERE userid = ?",
+      "UPDATE users SET profile_pic = $1 WHERE userid = $2",
       [profilePicUrl, userid]
     );
     
