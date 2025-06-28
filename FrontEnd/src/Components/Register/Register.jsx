@@ -92,7 +92,7 @@ const Register = () => {
             <label className={styles.label}>Password</label>
             <div className={styles.passwordInput}>
               <input
-                type={showPassword ? "text" : "password"}
+                type= {showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Password"
                 value={formData.password}

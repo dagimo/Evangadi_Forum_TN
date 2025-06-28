@@ -27,10 +27,10 @@ const answersRoute = require("./Routes/answerRoute");
 const authMiddleware = require("./MiddleWare/authMiddleWare");
 
 // Route middleware
-app.use("/api/users", userRoutes);
-app.use("/api/answer", answersRoute);
-app.use("/api/question", questionRoutes);
-app.use("/api/answer/:answerid", answersRoute);
+app.use("/api/users", authMiddleware,userRoutes);
+app.use("/api/answer", authMiddleware,answersRoute);
+app.use("/api/question", authMiddleware,questionRoutes);
+app.use("/api/answer/:answerid", authMiddleware,answersRoute);
 
 // Start server and create tables
 async function start() {
