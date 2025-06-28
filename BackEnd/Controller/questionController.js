@@ -111,7 +111,7 @@ ORDER BY q.createdate DESC;
 
 
     `);
-    const question = result.rows;
+    const questions = result.rows;
 
     if (questions.length === 0) {
       return res.status(StatusCodes.NOT_FOUND).json({
