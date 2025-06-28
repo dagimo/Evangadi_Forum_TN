@@ -67,6 +67,7 @@ async function login(req, res) {
 
 //* Function to handle user registration
 async function register(req, res) {
+  console.log("userController.js: Attempting register request...");
   // Asynchronous function for DB and hashing
   const { username, firstname, lastname, email, password } = req.body; // Get all registration fields
 
@@ -113,6 +114,7 @@ async function register(req, res) {
       .status(StatusCodes.CREATED)
       .json({ msg: "User registered successfully" });
   } catch (error) {
+    console.error("Register Error Details:", error);
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ msg: "An unexpected error occurred." });
