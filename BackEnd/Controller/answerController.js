@@ -13,7 +13,7 @@ const getAnswersByQuestionId = async (req, res) => {
     );
 
     // Fetch answers along with total votes per answer
-    const [answers] = await dbConnection.query(
+    const result = await dbConnection.query(
       `SELECT
          a.answerid,
          a.userid,
@@ -33,6 +33,7 @@ const getAnswersByQuestionId = async (req, res) => {
        ORDER BY createdate DESC`,
       [questionid]
     );
+    const answers = result.rows;
 
     res.status(200).json({ answers });
   } catch (err) {
@@ -52,11 +53,11 @@ async function upvoteDownvote(req, res) {
 
   try {
     // Check if user has already voted
-    const [existingVotes] = await dbConnection.query(
+    const resultExistingVotes = await dbConnection.query(
       `SELECT * FROM answer_votes WHERE answerid = $1 AND userid = $2`,
       [answerid, userid]
     );
-
+      const existingVotes = resultExistingVotes.rows
     if (existingVotes.length > 0) {
       // Update vote
       await dbConnection.query(
@@ -72,11 +73,11 @@ async function upvoteDownvote(req, res) {
     }
 
     // Optionally return total vote count
-    const [[{ totalVotes }]] = await dbConnection.query(
+    const resultTotalVotes = await dbConnection.query(
       `SELECT COALESCE(SUM(vote), 0) as totalVotes FROM answer_votes WHERE answerid = $1`,
       [answerid]
     );
-
+      totalVotes = resultTotalVotes.rows [0].totalVotes;
     res.status(200).json({ msg: "Vote recorded", totalVotes });
   } catch (err) {
     res.status(500).json({ msg: "Vote failed", error: err.message });
@@ -87,12 +88,12 @@ async function deleteAnswer(req, res) {
   const { answerid } = req.params;
   const { userid } = req.user;
 
-  const [result] = await dbConnection.query(
+  const result = await dbConnection.query(
     "DELETE FROM answers WHERE answerid = $1 AND userid = $2",
     [answerid, userid]
   );
 
-  if (result.affectedRows === 0) {
+  if (result.rowCount === 0) {
     return res.status(403).json({ msg: "Not authorized to delete this answer" });
   }
 

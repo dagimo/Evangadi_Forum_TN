@@ -1,4 +1,5 @@
 // db connection
+const { response } = require("express");
 const dbConnection = require("../Db/dbConfig");
 const { StatusCodes } = require("http-status-codes");
 
@@ -49,13 +50,14 @@ async function getSingleQuestion(req, res) {
       [questionid]
     );
 
-    const [question] = await dbConnection.query(
+    const result = await dbConnection.query(
       `SELECT q.*, u.userid, u.username, u.profile_pic 
        FROM questions q 
        LEFT JOIN users u ON q.userid = u.userid 
        WHERE q.questionid = $1`,
       [questionid]
     );
+    const question = result.rows;
 
     if (question.length === 0) {
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -79,7 +81,7 @@ async function getSingleQuestion(req, res) {
 const getAllQuestions = async (req, res) => {
   try {
     // The mysql2 package returns array with 2 elements from .query():
-    const [questions] = await dbConnection.query(`
+    const result = await dbConnection.query(`
 SELECT 
   q.questionid,
   q.title,
@@ -109,6 +111,7 @@ ORDER BY q.createdate DESC;
 
 
     `);
+    const question = result.rows;
 
     if (questions.length === 0) {
       return res.status(StatusCodes.NOT_FOUND).json({
@@ -142,10 +145,11 @@ async function updateQuestion(req, res) {
 
   try {
     // Check if the question exists and belongs to the user
-    const [question] = await dbConnection.query(
+    const result = await dbConnection.query(
       `SELECT userid FROM questions WHERE questionid = $1`,
       [questionid]
     );
+    const question = result.rows;
 
     if (question.length === 0) {
       return res.status(StatusCodes.NOT_FOUND).json({
@@ -183,10 +187,11 @@ async function deleteQuestion(req, res) {
 
   try {
     // Check if the question exists and belongs to the user
-    const [question] = await dbConnection.query(
+    const result = await dbConnection.query(
       `SELECT userid FROM questions WHERE questionid = $1`,
       [questionid]
     );
+    const question = result.rows;
 
     if (question.length === 0) {
       return res.status(StatusCodes.NOT_FOUND).json({

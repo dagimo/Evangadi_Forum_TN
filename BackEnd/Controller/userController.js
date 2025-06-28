@@ -20,11 +20,11 @@ async function login(req, res) {
 
   try {
     // Query database to find user by email
-    const [user] = await dbConnection.query(
+    const result = await dbConnection.query(
       "SELECT username, userid, password FROM users WHERE email = $1",
       [email]
     );
-
+      const user = result.rows;
     // Check if user exists in database (user.length will be 0 if not found)
     if (user.length == 0) {
       return res
@@ -81,11 +81,11 @@ async function register(req, res) {
 
   try {
     // Check if user already exists with provided username or email
-    const [user] = await dbConnection.query(
+    const result = await dbConnection.query(
       "SELECT username, userid FROM users WHERE username = $1 OR email = $2",
       [username, email]
     );
-
+      const user = result.rows;
     if (user.length > 0) {
       // If user found, registration fails
       return res
@@ -128,10 +128,11 @@ async function checkUser(req, res) {
 
   try {
     // Get user data including profile picture
-    const [user] = await dbConnection.query(
+    const result = await dbConnection.query(
       "SELECT username, userid, profile_pic FROM users WHERE userid = $1",
       [userid]
     );
+    const user= result.rows;
     
     if (user.length === 0) {
       return res.status(StatusCodes.NOT_FOUND).json({ msg: "User not found" });
@@ -153,10 +154,11 @@ async function getProfile(req, res) {
   const { userid } = req.user;
   
   try {
-    const [user] = await dbConnection.query(
+    const result = await dbConnection.query(
       "SELECT username, firstname, lastname, email, profile_pic FROM users WHERE userid = $1",
       [userid]
     );
+    const user = result.rows;
     
     if (user.length === 0) {
       return res.status(StatusCodes.NOT_FOUND).json({ msg: "User not found" });
@@ -175,10 +177,12 @@ async function updateProfile(req, res) {
   
   try {
     // Check if email is already taken by another user
-    const [existingUser] = await dbConnection.query(
+    const result = await dbConnection.query(
       "SELECT userid FROM users WHERE email = $1 AND userid != $2",
       [email, userid]
     );
+    const existingUser = result.rows;
+
     
     if (existingUser.length > 0) {
       return res.status(StatusCodes.CONFLICT).json({ msg: "Email already in use" });
