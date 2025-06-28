@@ -27,7 +27,7 @@ const answersRoute = require("./Routes/answerRoute");
 const authMiddleware = require("./MiddleWare/authMiddleWare");
 
 // Route middleware
-app.use("/api/users", authMiddleware,userRoutes);
+app.use("/api/users",userRoutes);
 app.use("/api/answer", authMiddleware,answersRoute);
 app.use("/api/question", authMiddleware,questionRoutes);
 app.use("/api/answer/:answerid", authMiddleware,answersRoute);
@@ -47,8 +47,8 @@ async function start() {
     //added tables
     await dbConnection.query(createAnswerVotes);
     await dbConnection.query(createAnswerComments);
-    console.log("✅ Connected to PostgreSQL database");
-    console.log("✅ Migrations completed successfully.");
+    // console.log("✅ Connected to PostgreSQL database");
+    // console.log("✅ Migrations completed successfully.");
   } catch (error) {
     console.log("❌ Error during DB setup:", error.message);
   }
